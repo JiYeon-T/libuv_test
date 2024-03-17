@@ -1,3 +1,8 @@
+# TODO:
+1. 互联网上游戏的数据同步/ 帧同步方案
+https://www.zhihu.com/question/27765214/answer/3227313427?utm_id=0
+
+
 ##### 1. libuv
 基于事件循环的异步 IO 支持;
 没有任何事件时, 就会退出 v_run()
@@ -11,3 +16,20 @@ make
 
 cmake -G "Unix Makefiles" -B .
 make
+
+
+To build with CMake:
+
+$ mkdir -p build
+
+$ (cd build && cmake .. -DBUILD_TESTING=ON) # generate project with tests
+$ cmake --build build                       # add `-j <n>` with cmake >= 3.12
+
+# Run tests:
+$ (cd build && ctest -C Debug --output-on-failure)
+
+# Or manually run tests:
+$ build/uv_run_tests                        # shared library build
+$ build/uv_run_tests_a                      # static library build
+./buidl/uv_run_tests loop_stop              # execute loop_stop test at test-loop-stop.c./buidl/, 在子线程中运行
+./buidl/uv_run_tests loop_stop loop_stop # 直接运行, 不创建子线程
