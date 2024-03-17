@@ -10,6 +10,7 @@ set(LIBUV_PATH external/libuv)
 include_directories(include ${LIBUV_PATH}/include)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/libuv)
 
+
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 target_link_libraries(${PROJECT_NAME} uv)
 
