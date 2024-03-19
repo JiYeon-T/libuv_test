@@ -48,16 +48,21 @@ struct thread_ctx {
 
 static void thread_main(void* arg) {
   int nwritten;
+  // send signal to process
   ASSERT_OK(kill(getpid(), SIGUSR1));
+  printf("%s pid:%d\n", __func__, getpid());
 
   do
     nwritten = write(pipe_fds[1], test_buf, sizeof(test_buf));
   while (nwritten == -1 && errno == EINTR);
 
   ASSERT_EQ(nwritten, sizeof(test_buf));
+
+  printf("%s exit\n", __func__);
 }
 
 static void sig_func(uv_signal_t* handle, int signum) {
+  printf("%s\n", __func__);
   uv_signal_stop(handle);
 }
 
@@ -69,6 +74,7 @@ TEST_IMPL(eintr_handling) {
 
   iov = uv_buf_init(buf, sizeof(buf));
   loop = uv_default_loop();
+  printf("%s pid:%d buf_len:%d ptr:%#8X\n", __func__, getpid(), iov.len, (long)iov.base);
 
   ASSERT_OK(uv_signal_init(loop, &signal));
   ASSERT_OK(uv_signal_start(&signal, sig_func, SIGUSR1));
@@ -81,8 +87,10 @@ TEST_IMPL(eintr_handling) {
   ASSERT_EQ(nread, sizeof(test_buf));
   ASSERT_OK(strcmp(buf, test_buf));
 
+  // no block operation, directly stop
+  // loop will not stop if don't stop signal(loop does not wait any event)
   ASSERT_OK(uv_run(loop, UV_RUN_DEFAULT));
-
+  printf("loop exit\n");
   ASSERT_OK(close(pipe_fds[0]));
   ASSERT_OK(close(pipe_fds[1]));
   uv_close((uv_handle_t*) &signal, NULL);

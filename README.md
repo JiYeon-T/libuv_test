@@ -10,6 +10,7 @@ https://www.zhihu.com/question/27765214/answer/3227313427?utm_id=0
 
 
 ##### 2. compile:
+- compile libuv test example
 mkdir build && cd build
 cmake ..
 make
@@ -18,8 +19,11 @@ cmake -G "Unix Makefiles" -B .
 make
 
 
-To build with CMake:
+- only compile libuv test
+```shell
+cd external/libuv
 
+To build with CMake:
 $ mkdir -p build
 
 $ (cd build && cmake .. -DBUILD_TESTING=ON) # generate project with tests
