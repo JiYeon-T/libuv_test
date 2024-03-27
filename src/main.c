@@ -44,31 +44,32 @@ static void idle_cb(uv_idle_t *handle)
 
 int main(int argc ,char *argv[])
 {
-    printf("lib uv version:%s\n", uv_version_string());
-    uv_loop_t *loop = malloc(sizeof(uv_loop_t));
-    uv_idle_t idler;
-    uv_loop_init(loop);
+    // printf("lib uv version:%s\n", uv_version_string());
+    // uv_loop_t *loop = malloc(sizeof(uv_loop_t));
+    // uv_idle_t idler;
+    // uv_loop_init(loop);
 
-    uv_timer_init(loop, &timer_handle);
-    uv_timer_start(&timer_handle, timer_cb, 1000, 1000);
+    // uv_timer_init(loop, &timer_handle);
+    // uv_timer_start(&timer_handle, timer_cb, 1000, 1000);
 
-    uv_timer_init(loop, &timer_handle2);
-    uv_timer_start(&timer_handle2, timer_cb2, 5000, 5000);
+    // uv_timer_init(loop, &timer_handle2);
+    // uv_timer_start(&timer_handle2, timer_cb2, 5000, 5000);
 
-    uv_fs_poll_init(loop, &poll_handle);
+    // uv_fs_poll_init(loop, &poll_handle);
 
-    uv_fs_poll_start(&poll_handle, poll_cb_fail, FIXTURE, 1000);
+    // uv_fs_poll_start(&poll_handle, poll_cb_fail, FIXTURE, 1000);
 
-    uv_idle_init(loop, &idler);
-    uv_idle_start(&idler, idle_cb);
+    // uv_idle_init(loop, &idler);
+    // uv_idle_start(&idler, idle_cb);
 
-    printf("Now quitting.\n");
-    uv_run(loop, UV_RUN_DEFAULT);
+    // printf("Now quitting.\n");
+    // uv_run(loop, UV_RUN_DEFAULT);
 
-    printf("alive:%d\n", uv_loop_alive(loop));
-    uv_loop_close(loop);
-    printf("alive:%d\n", uv_loop_alive(loop));
-    free(loop);
+    // printf("alive:%d\n", uv_loop_alive(loop));
+    // uv_loop_close(loop);
+    // printf("alive:%d\n", uv_loop_alive(loop));
+    // free(loop);
 
+    start_server();
     return 0;
 }

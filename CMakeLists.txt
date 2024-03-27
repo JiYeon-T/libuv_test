@@ -4,7 +4,7 @@ project(demo_start)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build/lib)
-set(SRC_LIST "src/main.c")
+set(SRC_LIST "src/main.c" "src/client1.c")
 set(LIBUV_PATH external/libuv)
 
 include_directories(include ${LIBUV_PATH}/include)
