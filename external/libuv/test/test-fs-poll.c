@@ -57,7 +57,7 @@ static void touch_file(const char* path) {
   int i;
 
   ASSERT((fp = fopen(FIXTURE, "w+")));
-
+  printf("%s\n", __func__);
   /* Need to change the file size because the poller may not pick up
    * sub-second mtime changes.
    */
@@ -71,11 +71,13 @@ static void touch_file(const char* path) {
 
 
 static void close_cb(uv_handle_t* handle) {
+  printf("%s close_cb_called:%d\n", __func__, close_cb_called);
   close_cb_called++;
 }
 
 
 static void timer_cb(uv_timer_t* handle) {
+  printf("%s timer_cb_called:%d\n", __func__, timer_cb_called);
   touch_file(FIXTURE);
   timer_cb_called++;
 }
@@ -85,6 +87,7 @@ static void poll_cb_fail(uv_fs_poll_t* handle,
                          int status,
                          const uv_stat_t* prev,
                          const uv_stat_t* curr) {
+  printf("%s\n", __func__);
   ASSERT(0 && "fail_cb called");
 }
 
@@ -92,6 +95,7 @@ static void poll_cb_noop(uv_fs_poll_t* handle,
                          int status,
                          const uv_stat_t* prev,
                          const uv_stat_t* curr) {
+  printf("%s\n", __func__);
 }
 
 
@@ -100,6 +104,7 @@ static void poll_cb(uv_fs_poll_t* handle,
                     const uv_stat_t* prev,
                     const uv_stat_t* curr) {
   uv_stat_t zero_statbuf;
+  printf("%s\n", __func__);
 
   memset(&zero_statbuf, 0, sizeof(zero_statbuf));
 

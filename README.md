@@ -10,7 +10,7 @@ https://www.zhihu.com/question/27765214/answer/3227313427?utm_id=0
 
 
 ##### 2. compile:
-- compile libuv test example
+- 编译自己写的测试, libuv 作为第三方库,compile libuv test example
 mkdir build && cd build
 cmake ..
 make
@@ -19,7 +19,7 @@ cmake -G "Unix Makefiles" -B .
 make
 
 
-- only compile libuv test
+- 仅编译 Libuv 测试用例, only compile libuv test
 ```shell
 cd external/libuv
 
@@ -28,6 +28,7 @@ $ mkdir -p build
 
 $ (cd build && cmake .. -DBUILD_TESTING=ON) # generate project with tests
 $ cmake --build build                       # add `-j <n>` with cmake >= 3.12
+$ make
 
 # Run tests:
 $ (cd build && ctest -C Debug --output-on-failure)
@@ -36,4 +37,4 @@ $ (cd build && ctest -C Debug --output-on-failure)
 $ build/uv_run_tests                        # shared library build
 $ build/uv_run_tests_a                      # static library build
 ./buidl/uv_run_tests loop_stop              # execute loop_stop test at test-loop-stop.c./buidl/, 在子线程中运行
-./buidl/uv_run_tests loop_stop loop_stop # 直接运行, 不创建子线程
+./buidl/uv_run_tests loop_stop loop_stop # 直接运行某一个测试例程, 不创建子线程

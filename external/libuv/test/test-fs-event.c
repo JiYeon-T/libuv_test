@@ -64,6 +64,7 @@ static void fs_event_fail(uv_fs_event_t* handle,
                           const char* filename,
                           int events,
                           int status) {
+  printf("%s\n", __func__);
   ASSERT(0 && "should never be called");
 }
 
@@ -95,6 +96,7 @@ static void touch_file(const char* name) {
   uv_fs_t req;
   uv_buf_t buf;
 
+  printf("%s\n", __func__);
   r = uv_fs_open(NULL, &req, name, O_RDWR, 0, NULL);
   ASSERT_GE(r, 0);
   file = r;
@@ -195,6 +197,8 @@ static void fs_event_cb_dir_multi_file(uv_fs_event_t* handle,
   ASSERT_PTR_EQ(handle, &fs_event);
   ASSERT_OK(status);
   ASSERT(events == UV_CHANGE || events == UV_RENAME);
+
+  // different platform
   #if defined(__APPLE__) || defined(_WIN32) || defined(__linux__)
   ASSERT_OK(strncmp(filename, file_prefix, sizeof(file_prefix) - 1));
   #else
@@ -317,6 +321,7 @@ static void fs_event_cb_dir_multi_file_in_subdir(uv_fs_event_t* handle,
 
 static void fs_event_cb_file(uv_fs_event_t* handle, const char* filename,
   int events, int status) {
+  printf("%s\n", __func__);
   ++fs_event_cb_called;
   ASSERT_PTR_EQ(handle, &fs_event);
   ASSERT_OK(status);
@@ -348,12 +353,12 @@ static void fs_event_cb_file_current_dir(uv_fs_event_t* handle,
 
 static void timer_cb_file(uv_timer_t* handle) {
   ++timer_cb_called;
-
+  printf("%s timer_cb_called:%d\n", __func__, timer_cb_called);
   if (timer_cb_called == 1) {
     touch_file("watch_dir/file1");
   } else {
     touch_file("watch_dir/file2");
-    uv_close((uv_handle_t*)handle, close_cb);
+    uv_close((uv_handle_t*)handle, close_cb); // stop timer
   }
 }
 

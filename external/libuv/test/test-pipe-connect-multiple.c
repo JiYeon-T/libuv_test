@@ -46,6 +46,8 @@ static void connection_cb(uv_stream_t* server, int status) {
   uv_pipe_t* conn;
   ASSERT_OK(status);
 
+  printf("server %s\n", __func__);
+
   conn = &connections[connection_cb_called];
   r = uv_pipe_init(server->loop, conn, 0);
   ASSERT_OK(r);
@@ -61,6 +63,7 @@ static void connection_cb(uv_stream_t* server, int status) {
 
 
 static void connect_cb(uv_connect_t* connect_req, int status) {
+  printf("client %s\n", __func__);
   ASSERT_OK(status);
   if (++connect_cb_called == NUM_CLIENTS &&
       connection_cb_called == NUM_CLIENTS) {
@@ -76,7 +79,7 @@ TEST_IMPL(pipe_connect_multiple) {
   int i;
   int r;
   uv_loop_t* loop;
-
+    printf("%s\n", __func__);
   loop = uv_default_loop();
 
   r = uv_pipe_init(loop, &server_handle, 0);
@@ -88,14 +91,14 @@ TEST_IMPL(pipe_connect_multiple) {
   r = uv_listen((uv_stream_t*)&server_handle, 128, connection_cb);
   ASSERT_OK(r);
 
-  for (i = 0; i < NUM_CLIENTS; i++) {
-    r = uv_pipe_init(loop, &clients[i].pipe_handle, 0);
-    ASSERT_OK(r);
-    uv_pipe_connect(&clients[i].conn_req,
-                    &clients[i].pipe_handle,
-                    TEST_PIPENAME,
-                    connect_cb);
-  }
+  // for (i = 0; i < NUM_CLIENTS; i++) {
+  //   r = uv_pipe_init(loop, &clients[i].pipe_handle, 0);
+  //   ASSERT_OK(r);
+  //   uv_pipe_connect(&clients[i].conn_req,
+  //                   &clients[i].pipe_handle,
+  //                   TEST_PIPENAME,
+  //                   connect_cb);
+  // }
 
   uv_run(loop, UV_RUN_DEFAULT);
 

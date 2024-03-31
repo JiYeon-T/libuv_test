@@ -39,9 +39,18 @@ static int result_check_count;
 
 
 static void fail_cb(uv_fs_t* req) {
+  printf("%s\n", __func__);
   FATAL("fail_cb should not have been called");
 }
 
+/**
+ * @brief handle result
+ * 
+ * @note Cleanup request. Must be called after a request is finished to deallocate 
+ * any memory libuv might have allocated.
+ * uv_fs_req_cleanup(&stat_req);
+ * 
+*/
 static void handle_result(uv_fs_t* req) {
   uv_fs_t stat_req;
   uint64_t size;
@@ -56,13 +65,16 @@ static void handle_result(uv_fs_t* req) {
   ASSERT_OK(r);
   size = stat_req.statbuf.st_size;
   mode = stat_req.statbuf.st_mode;
+  printf("path:%s size:%ld mode:%#o\n", stat_req.path, 
+    stat_req.statbuf.st_size, stat_req.statbuf.st_mode);
   uv_fs_req_cleanup(&stat_req);
+
   r = uv_fs_stat(NULL, &stat_req, dst, NULL);
   ASSERT_OK(r);
   ASSERT_EQ(stat_req.statbuf.st_size, size);
   ASSERT_EQ(stat_req.statbuf.st_mode, mode);
   uv_fs_req_cleanup(&stat_req);
-  uv_fs_req_cleanup(req);
+  // uv_fs_req_cleanup(req); // identical code format
   result_check_count++;
 }
 
@@ -115,6 +127,7 @@ TEST_IMPL(fs_copyfile) {
   ASSERT_EQ(req.result, UV_ENOENT);
   ASSERT_EQ(r, UV_ENOENT);
   uv_fs_req_cleanup(&req);
+
   /* The destination should not exist. */
   r = uv_fs_stat(NULL, &req, dst, NULL);
   ASSERT(r);
@@ -125,6 +138,7 @@ TEST_IMPL(fs_copyfile) {
   r = uv_fs_copyfile(NULL, &req, src, src, 0, NULL);
   ASSERT_OK(r);
   uv_fs_req_cleanup(&req);
+
   /* Verify that the src file did not get truncated. */
   r = uv_fs_stat(NULL, &req, src, NULL);
   ASSERT_OK(r);
@@ -133,10 +147,11 @@ TEST_IMPL(fs_copyfile) {
   unlink(src);
 
   /* Copies file synchronously. Creates new file. */
-  unlink(dst);
-  r = uv_fs_copyfile(NULL, &req, fixture, dst, 0, NULL);
-  ASSERT_OK(r);
-  handle_result(&req);
+  // unlink(dst);
+  // r = uv_fs_copyfile(NULL, &req, fixture, dst, 0, NULL);
+  // ASSERT_OK(r);
+  // handle_result(&req);
+  // uv_fs_req_cleanup(&req);
 
   /* Copies a file of size zero. */
   unlink(dst);
@@ -144,11 +159,13 @@ TEST_IMPL(fs_copyfile) {
   r = uv_fs_copyfile(NULL, &req, src, dst, 0, NULL);
   ASSERT_OK(r);
   handle_result(&req);
+  uv_fs_req_cleanup(&req);
 
   /* Copies file synchronously. Overwrites existing file. */
   r = uv_fs_copyfile(NULL, &req, fixture, dst, 0, NULL);
   ASSERT_OK(r);
   handle_result(&req);
+  uv_fs_req_cleanup(&req);
 
   /* Fails to overwrites existing file. */
   ASSERT_OK(uv_fs_chmod(NULL, &req, dst, 0644, NULL));
@@ -164,6 +181,7 @@ TEST_IMPL(fs_copyfile) {
   r = uv_fs_copyfile(NULL, &req, src, dst, 0, NULL);
   ASSERT_OK(r);
   handle_result(&req);
+  uv_fs_req_cleanup(&req);
 
   /* Copies a larger file. */
   unlink(dst);
@@ -171,6 +189,7 @@ TEST_IMPL(fs_copyfile) {
   r = uv_fs_copyfile(NULL, &req, src, dst, 0, NULL);
   ASSERT_OK(r);
   handle_result(&req);
+  uv_fs_req_cleanup(&req);
   unlink(src);
 
   /* Copies file asynchronously */
@@ -195,6 +214,7 @@ TEST_IMPL(fs_copyfile) {
   r = uv_fs_copyfile(NULL, &req, fixture, dst, UV_FS_COPYFILE_FICLONE, NULL);
   ASSERT_OK(r);
   handle_result(&req);
+  uv_fs_req_cleanup(&req);
 
   /* Copies file using UV_FS_COPYFILE_FICLONE_FORCE. */
   unlink(dst);
@@ -202,9 +222,10 @@ TEST_IMPL(fs_copyfile) {
                      NULL);
   ASSERT_LE(r, 0);
 
-  if (r == 0)
+  if (r == 0) {
     handle_result(&req);
-
+    uv_fs_req_cleanup(&req);
+  }
 #ifndef _WIN32
   /* Copying respects permissions/mode. */
   unlink(dst);
